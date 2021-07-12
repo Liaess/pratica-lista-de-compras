@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useState } from "react";
 import styled from "styled-components";
 
@@ -6,12 +7,22 @@ export default function InsertForm({ onAddItem }) {
 
   function handleSubmit(e) {
     e.preventDefault();
-
     const newItem = { text };
-    // Save item to server
-
-    setText("");
-    onAddItem();
+    const req = axios.post("http://localhost:4000/list", newItem);
+    req.then(()=>{
+      setText("");
+      onAddItem();
+    });
+    req.catch((err)=>{
+      setText("");
+      onAddItem();
+      if(err.response.status === 400){
+        alert("O campo não pode ser vázio ou conter apenas números.");
+      }
+      if(err.response.status === 500){
+        alert("Ocorreu um error tente novamente!");
+      }
+    });
   }
 
   return (

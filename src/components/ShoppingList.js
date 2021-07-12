@@ -1,19 +1,26 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import InsertForm from "./InsertForm";
+import axios from "axios";
 
 export default function ShoppingList() {
-  // Fake data
-  const [items, setItems] = useState([
-    { id: 1, text: "Pão" },
-    { id: 2, text: "Salsicha" },
-    { id: 3, text: "Ketchup" },
-  ]);
+  const [items, setItems] = useState([]);
 
   useEffect(loadItems, []);
 
   function loadItems() {
-    // Get items from back-end and update state
+    const req = axios.get("http://localhost:4000/list");
+    req.then(({data})=>{
+      setItems(data);
+    });
+    req.catch((err)=>{
+      if(err.response.status === 400){
+        alert("O campo não pode ser vázio ou conter apenas números.");
+      }
+      if(err.response.status === 500){
+        alert("Ocorreu um error tente novamente!");
+      }
+    });
   }
 
   return (
@@ -21,7 +28,7 @@ export default function ShoppingList() {
       <InsertForm onAddItem={loadItems} />
       <List>
         {items.map((item) => (
-          <li key={item.id}>{item.text}</li>
+          <li key={item.id}>{item.list}</li>
         ))}
       </List>
     </>
